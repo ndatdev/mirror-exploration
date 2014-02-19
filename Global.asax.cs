@@ -74,6 +74,12 @@ namespace MirrorQuickstart
                 "", // URL with parameters
                 new { controller = "Main", action = "Index" } // Parameter defaults
             );
+
+            routes.MapRoute(
+                "media",
+                "media",
+                new { controller = "Main", action = "MultimediaItems" }
+            );
         }
 
         protected void Application_Start()

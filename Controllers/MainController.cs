@@ -22,8 +22,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 
 namespace MirrorQuickstart.Controllers
 {
@@ -93,6 +95,21 @@ namespace MirrorQuickstart.Controllers
                 subscriptions.Items.Any(x => x.Collection == "locations");
 
             return View(rootData);
+        }
+
+        public ActionResult MultimediaItems()
+        {
+            if (!Initialize())
+            {
+                return Redirect(Url.Action("StartAuth", "Auth"));
+            }
+
+            var listRequest = Service.Timeline.List();
+            listRequest.MaxResults = 3;
+            TimelineListResponse response = listRequest.Fetch();
+            var items = from item in response.Items where item.Attachments != null select item;
+
+            return Json(items.ToList(), JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost, ActionName("Post")]
