@@ -105,7 +105,7 @@ namespace MirrorQuickstart.Controllers
             }
 
             var listRequest = Service.Timeline.List();
-            listRequest.MaxResults = 3;
+            //listRequest.MaxResults = 3;
             TimelineListResponse response = listRequest.Fetch();
             var items = from item in response.Items where item.Attachments != null select item;
 
