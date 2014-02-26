@@ -109,7 +109,86 @@ namespace MirrorQuickstart.Controllers
             TimelineListResponse response = listRequest.Fetch();
             var items = from item in response.Items where item.Attachments != null select item;
 
+            // Sorry, I latched onto this method because I didn't know exactly how to set my own up.
+            // - Sean
+            foreach (TimelineItem item in response.Items)
+            {
+                // Check to make sure the timeline item we're looking at has an attachment.
+                if (item.Id != null && item.Attachments != null)
+                {
+                    PrintAttachmentMetadata(Service, item.Id, item.Attachments.FirstOrDefault().Id);
+                }
+            }
+
             return Json(items.ToList(), JsonRequestBehavior.AllowGet);
+        }
+
+        public static void PrintAttachmentMetadata(MirrorService service, String itemId, String attachmentId)
+        {
+            try
+            {
+                // Get the attachment from the API.
+                Attachment attachment = service.Timeline.Attachments.Get(itemId, attachmentId).Fetch();
+
+                // Print some stuff about it. Meh.
+                Console.WriteLine("Attachment content type: " + attachment.ContentType);
+                Console.WriteLine("Attachment content URL: " + attachment.ContentUrl);
+
+                // Only works for images at the moment.
+                if (attachment.ContentType == "image/jpeg")
+                {
+                    // I had this just download to my desktop for the moment.
+                    string filename = @"C:\Users\Sean\Desktop\" +  attachment.Id.TrimStart("ps:".ToCharArray()) + @".jpeg";
+                   
+                    Stream stream = DownloadAttachment(service, attachment);
+
+                    FileStream fs = System.IO.File.Create(filename);
+
+                    int count = 0;
+                    do
+                    {
+                        byte[] buf = new byte[1024];
+                        count = stream.Read(buf, 0, 1024);
+                        fs.Write(buf, 0, count);
+                    } while (stream.CanRead && count > 0);
+
+                    stream.Close();
+                    fs.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: " + e.Message);
+            }
+        }
+
+        // This handles getting the stream for downloading. Luke, you can probably make more sense of this
+        // than I can.
+        // - Sean
+        public static System.IO.Stream DownloadAttachment(MirrorService service, Attachment attachment)
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                  new Uri(attachment.ContentUrl));
+                service.Authenticator.ApplyAuthenticationToRequest(request);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return response.GetResponseStream();
+                }
+                else
+                {
+                    Console.WriteLine(
+                      "An error occurred: " + response.StatusDescription);
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: " + e.Message);
+                return null;
+            }
         }
 
         [HttpPost, ActionName("Post")]
