@@ -47,7 +47,7 @@ namespace MirrorQuickstart.Controllers
             NameValueCollection queryParameters = HttpUtility.ParseQueryString(builder.Query);
 
             queryParameters.Set("access_type", "offline");
-            queryParameters.Set("approval_prompt", "auto");
+            queryParameters.Set("approval_prompt", "force");
 
             builder.Query = queryParameters.ToString();
 

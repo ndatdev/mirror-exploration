@@ -97,6 +97,22 @@ namespace MirrorQuickstart.Controllers
             return View(rootData);
         }
 
+        public ActionResult Videos()
+        {
+            if (!Initialize())
+            {
+                return Redirect(Url.Action("StartAuth", "Auth"));
+            }
+
+            var listRequest = Service.Timeline.List();
+            TimelineListResponse response = listRequest.Fetch();
+            var items = from item in response.Items where item.Attachments != null
+                        from attachment in item.Attachments where attachment.ContentType == "video/mp4"
+                        select Service.Timeline.Attachments.Get(item.Id, attachment.Id).Fetch();
+
+            return Json(items.ToList(), JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult MultimediaItems()
         {
             if (!Initialize())

@@ -80,6 +80,12 @@ namespace MirrorQuickstart
                 "media",
                 new { controller = "Main", action = "MultimediaItems" }
             );
+
+            routes.MapRoute(
+                "video",
+                "video",
+                new { controller = "Main", action = "Videos" }
+            );
         }
 
         protected void Application_Start()
