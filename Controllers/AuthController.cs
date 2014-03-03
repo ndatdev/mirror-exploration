@@ -47,7 +47,7 @@ namespace MirrorQuickstart.Controllers
             NameValueCollection queryParameters = HttpUtility.ParseQueryString(builder.Query);
 
             queryParameters.Set("access_type", "offline");
-            queryParameters.Set("approval_prompt", "force");
+            queryParameters.Set("approval_prompt", "auto");
 
             builder.Query = queryParameters.ToString();
 
@@ -148,15 +148,15 @@ namespace MirrorQuickstart.Controllers
                 Console.WriteLine("Post auth tasks are not supported on staging.");
             }
 
-            TimelineItem item = new TimelineItem()
-            {
-                Text = "Welcome to the .NET Quick Start",
-                Notification = new NotificationConfig()
-                {
-                    Level = "DEFAULT"
-                }
-            };
-            mirrorService.Timeline.Insert(item).Fetch();
+            //TimelineItem item = new TimelineItem()
+            //{
+            //    Text = "Welcome to the .NET Quick Start",
+            //    Notification = new NotificationConfig()
+            //    {
+            //        Level = "DEFAULT"
+            //    }
+            //};
+            //mirrorService.Timeline.Insert(item).Fetch();
         }
 
         /// <summary>
